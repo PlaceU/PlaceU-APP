@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 04-Nov-2019 às 14:38
+-- Tempo de geração: 21-Nov-2019 às 14:02
 -- Versão do servidor: 10.4.6-MariaDB
 -- versão do PHP: 7.3.9
 
@@ -42,7 +42,7 @@ CREATE TABLE `edificios` (
 
 CREATE TABLE `membros_organizacao` (
   `id_utilizador` int(11) UNSIGNED NOT NULL,
-  `id_organizao` int(11) UNSIGNED NOT NULL,
+  `id_organizacao` int(11) UNSIGNED NOT NULL,
   `moderador` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -50,7 +50,7 @@ CREATE TABLE `membros_organizacao` (
 -- Extraindo dados da tabela `membros_organizacao`
 --
 
-INSERT INTO `membros_organizacao` (`id_utilizador`, `id_organizao`, `moderador`) VALUES
+INSERT INTO `membros_organizacao` (`id_utilizador`, `id_organizacao`, `moderador`) VALUES
 (1, 1, NULL);
 
 -- --------------------------------------------------------
@@ -148,8 +148,8 @@ ALTER TABLE `edificios`
 -- Índices para tabela `membros_organizacao`
 --
 ALTER TABLE `membros_organizacao`
-  ADD UNIQUE KEY `id_utilizador` (`id_utilizador`,`id_organizao`),
-  ADD KEY `id_organizao` (`id_organizao`);
+  ADD UNIQUE KEY `id_utilizador` (`id_utilizador`,`id_organizacao`),
+  ADD KEY `id_organizao` (`id_organizacao`);
 
 --
 -- Índices para tabela `organizacao`
@@ -223,7 +223,7 @@ ALTER TABLE `utilizador`
 --
 ALTER TABLE `membros_organizacao`
   ADD CONSTRAINT `membros_organizacao_ibfk_1` FOREIGN KEY (`id_utilizador`) REFERENCES `utilizador` (`id`),
-  ADD CONSTRAINT `membros_organizacao_ibfk_2` FOREIGN KEY (`id_organizao`) REFERENCES `organizacao` (`id`);
+  ADD CONSTRAINT `membros_organizacao_ibfk_2` FOREIGN KEY (`id_organizacao`) REFERENCES `organizacao` (`id`);
 
 --
 -- Limitadores para a tabela `organizacao`
