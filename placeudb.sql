@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 21-Nov-2019 às 14:02
+-- Tempo de geração: 12-Dez-2019 às 16:35
 -- Versão do servidor: 10.4.6-MariaDB
 -- versão do PHP: 7.3.9
 
@@ -34,6 +34,13 @@ CREATE TABLE `edificios` (
   `morada` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Extraindo dados da tabela `edificios`
+--
+
+INSERT INTO `edificios` (`id`, `designacao`, `morada`) VALUES
+(1, 'aaaaaaaaaaaaaa', 'rua do edificio');
+
 -- --------------------------------------------------------
 
 --
@@ -46,12 +53,25 @@ CREATE TABLE `membros_organizacao` (
   `moderador` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Extraindo dados da tabela `membros_organizacao`
+-- Estrutura da tabela `migration`
 --
 
-INSERT INTO `membros_organizacao` (`id_utilizador`, `id_organizacao`, `moderador`) VALUES
-(1, 1, NULL);
+CREATE TABLE `migration` (
+  `version` varchar(180) NOT NULL,
+  `apply_time` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `migration`
+--
+
+INSERT INTO `migration` (`version`, `apply_time`) VALUES
+('m000000_000000_base', 1576149113),
+('m130524_201442_init', 1576149127),
+('m190124_110200_add_verification_token_column_to_user_table', 1576149127);
 
 -- --------------------------------------------------------
 
@@ -66,16 +86,9 @@ CREATE TABLE `organizacao` (
   `mail` varchar(200) NOT NULL,
   `contacto_fixo` varchar(100) NOT NULL,
   `contacto_movel` varchar(100) NOT NULL,
-  `dta_registo` date NOT NULL,
+  `dta_registo` date NOT NULL DEFAULT current_timestamp(),
   `id_owner` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `organizacao`
---
-
-INSERT INTO `organizacao` (`id`, `nome`, `morada`, `mail`, `contacto_fixo`, `contacto_movel`, `dta_registo`, `id_owner`) VALUES
-(1, 'Nelsan Lda', 'rua da empresa', 'nelsanlda@gmail.com', '2121212121', '1111111111', '2019-11-03', 1);
 
 -- --------------------------------------------------------
 
@@ -111,6 +124,25 @@ CREATE TABLE `salas` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `user`
+--
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `auth_key` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `password_reset_token` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `status` smallint(6) NOT NULL DEFAULT 10,
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
+  `verification_token` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `utilizador`
 --
 
@@ -121,8 +153,8 @@ CREATE TABLE `utilizador` (
   `email` varchar(100) NOT NULL,
   `morada` varchar(200) DEFAULT NULL,
   `contacto` varchar(100) DEFAULT NULL,
-  `dta_nascimento` date NOT NULL,
-  `dta_registo` date NOT NULL,
+  `dta_nascimento` date DEFAULT NULL,
+  `dta_registo` date DEFAULT current_timestamp(),
   `isadmin` tinyint(1) DEFAULT NULL,
   `isbanned` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -132,7 +164,10 @@ CREATE TABLE `utilizador` (
 --
 
 INSERT INTO `utilizador` (`id`, `nome`, `password`, `email`, `morada`, `contacto`, `dta_nascimento`, `dta_registo`, `isadmin`, `isbanned`) VALUES
-(1, 'Nelsan', '1234', 'nelsan@gmail.com', 'Rua da escola', '1111111111', '1991-02-04', '2019-11-01', 1, NULL);
+(13, 'wedasdasdasd', 'adasdasdasd', 'adasdasdasd', 'asdasdasda', 'adadasdadsas', '1991-02-12', '0000-00-00', 1, 0),
+(15, 'qqqqqqqqqqqqqq', 'qqqqqqqqqqqqqqqq', 'qqqqqqqqqqqqqqqqqq', 'qqqqqqqqqqqqqqqqqq', 'qqqqqqqqqqqqqqqq', '1991-02-12', '0000-00-00', NULL, NULL),
+(17, 'qqqqqqqqqqqqqq', 'qqqqqqqqqqqqqqqq', 'qqqqqqq', 'qqqqqqqqqqqqqqqqqq', 'qqqqqqqqqqqqqqqq', '1991-02-12', '2019-12-09', NULL, NULL),
+(19, 'Jorge Severino', '12444', 'qweasdasdae@mail.com', 'rua da escola', '22222222', '1991-02-21', '2019-12-09', 1, 0);
 
 --
 -- Índices para tabelas despejadas
@@ -150,6 +185,12 @@ ALTER TABLE `edificios`
 ALTER TABLE `membros_organizacao`
   ADD UNIQUE KEY `id_utilizador` (`id_utilizador`,`id_organizacao`),
   ADD KEY `id_organizao` (`id_organizacao`);
+
+--
+-- Índices para tabela `migration`
+--
+ALTER TABLE `migration`
+  ADD PRIMARY KEY (`version`);
 
 --
 -- Índices para tabela `organizacao`
@@ -174,6 +215,15 @@ ALTER TABLE `salas`
   ADD KEY `id_edificio` (`id_edificio`);
 
 --
+-- Índices para tabela `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `password_reset_token` (`password_reset_token`);
+
+--
 -- Índices para tabela `utilizador`
 --
 ALTER TABLE `utilizador`
@@ -188,13 +238,13 @@ ALTER TABLE `utilizador`
 -- AUTO_INCREMENT de tabela `edificios`
 --
 ALTER TABLE `edificios`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `organizacao`
 --
 ALTER TABLE `organizacao`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `requisicoes`
@@ -209,10 +259,16 @@ ALTER TABLE `salas`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `utilizador`
 --
 ALTER TABLE `utilizador`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Restrições para despejos de tabelas
@@ -222,21 +278,21 @@ ALTER TABLE `utilizador`
 -- Limitadores para a tabela `membros_organizacao`
 --
 ALTER TABLE `membros_organizacao`
-  ADD CONSTRAINT `membros_organizacao_ibfk_1` FOREIGN KEY (`id_utilizador`) REFERENCES `utilizador` (`id`),
-  ADD CONSTRAINT `membros_organizacao_ibfk_2` FOREIGN KEY (`id_organizacao`) REFERENCES `organizacao` (`id`);
+  ADD CONSTRAINT `membros_organizacao_ibfk_1` FOREIGN KEY (`id_utilizador`) REFERENCES `utilizador` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  ADD CONSTRAINT `membros_organizacao_ibfk_2` FOREIGN KEY (`id_organizacao`) REFERENCES `organizacao` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `organizacao`
 --
 ALTER TABLE `organizacao`
-  ADD CONSTRAINT `organizacao_ibfk_1` FOREIGN KEY (`id_owner`) REFERENCES `utilizador` (`id`);
+  ADD CONSTRAINT `organizacao_ibfk_1` FOREIGN KEY (`id_owner`) REFERENCES `utilizador` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `requisicoes`
 --
 ALTER TABLE `requisicoes`
   ADD CONSTRAINT `fk_requisicoes_sala` FOREIGN KEY (`id_sala`) REFERENCES `salas` (`id`),
-  ADD CONSTRAINT `fk_requisicoes_utilizador` FOREIGN KEY (`id_utilizador`) REFERENCES `utilizador` (`id`);
+  ADD CONSTRAINT `fk_requisicoes_utilizador` FOREIGN KEY (`id_utilizador`) REFERENCES `utilizador` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `salas`
